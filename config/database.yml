@@ -81,5 +81,5 @@ test:
 production:
   <<: *default
   database: capistrano_exercise_production
-  username: capistrano_exercise
-  password: <%= ENV['CAPISTRANO_EXERCISE_DATABASE_PASSWORD'] %>
+  username: <%= ENV['DB_USERNAME'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
