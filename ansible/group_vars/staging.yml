@@ -1,0 +1,7 @@
+ruby:
+  version: 2.5.0
+user:
+  name: vagrant
+  group: vagrant
+application:
+  name: capistrano_exercise

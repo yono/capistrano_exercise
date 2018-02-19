@@ -1,0 +1,35 @@
+---
+- name: ensure postgresql packages are installed
+  become: yes
+  yum: name={{ item }} state=present
+  with_items:
+    - postgresql-server
+    - postgresql-devel
+    - python-psycopg2
+
+- name: init postgresql
+  become: yes
+  shell: /bin/bash -l -c 'service postgresql initdb'
+  args:
+    creates: /var/lib/pgsql/data/postgresql.conf
+
+- name: start postgresql
+  become: yes
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: create database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: '{{ application.name }}_production'
+
+- name: Create User
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    db: '{{ application.name }}_production'
+    user: '{{ user.name }}'
+    role_attr_flags: CREATEDB,NOSUPERUSER

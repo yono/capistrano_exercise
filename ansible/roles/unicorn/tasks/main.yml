@@ -1,0 +1,20 @@
+- name: copy to /etc/init.d/unicorn
+  become: yes
+  template:
+    src: init_d
+    dest: /etc/init.d/unicorn
+    owner: root
+    group: root
+    mode: 0755
+
+- name: check chkconfig list
+  become: yes
+  shell: /sbin/chkconfig --list | grep unicorn
+  changed_when: False
+  failed_when: False
+  register: added_to_chkconfig
+
+- name: add to chkconfig
+  become: yes
+  shell: /sbin/chkconfig --add unicorn
+  when: added_to_chkconfig.rc == 1

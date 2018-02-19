@@ -1,0 +1,55 @@
+---
+- name: install dependent packages for rails
+  become: yes
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc
+    - gcc-c++
+    - git
+    - libselinux-python
+    - libyaml-devel
+    - libffi-devel
+    - ncurses-devel
+    - openssl-devel
+    - readline-devel
+    - zlib-devel
+
+- name: disable selinux
+  become: yes
+  selinux:
+    state: disabled
+
+- name: check the presence of deployment destination
+  stat:
+    path: /var/www
+  register: deploy_dir
+
+- name: make the destination directory
+  become: yes
+  file:
+    path: /var/www
+    state: directory
+    owner: '{{ user.name }}'
+    group: '{{ user.name }}'
+
+- name: create profile.d
+  become: yes
+  become_user: '{{ user.name }}'
+  file:
+    dest: /home/{{ user.name }}/profile.d
+    state: directory
+
+- name: create env.sh
+  become: yes
+  become_user: '{{ user.name }}'
+  template:
+    src: env.sh
+    dest: /home/{{ user.name }}/profile.d/env.sh
+
+- name: source env.sh
+  become: yes
+  become_user: '{{ user.name }}'
+  lineinfile:
+    dest: /home/{{ user.name }}/.bashrc
+    line: source /home/{{ user.name }}/profile.d/env.sh
+

@@ -1,0 +1,8 @@
+---
+- hosts: all
+  roles:
+    - base
+    - postgresql
+    - nginx
+    - ruby
+    - unicorn

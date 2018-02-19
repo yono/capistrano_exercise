@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export DB_NAME=capistrano_exercise_production
+export SECRET_KEY_BASE=af266dece8ad3d74fc161d6511676eeee8e57cb71f6e78c283dffde1f733808df35e74c14285adddf3466fce0dc53371e03e7ea412a7aaf40e1e4e32309197b5

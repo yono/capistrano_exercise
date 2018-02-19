@@ -1,0 +1,80 @@
+---
+- name: install rbenv
+  become: yes
+  become_user: '{{ user.name }}'
+  git:
+    repo: https://github.com/rbenv/rbenv.git
+    dest: /home/{{ user.name }}/.rbenv
+
+- name: create rbenv plugins directory
+  become: yes
+  become_user: '{{ user.name }}'
+  file:
+    dest: /home/{{ user.name }}/.rbenv/plugins
+    state: directory
+
+- name: install ruby-bulid
+  become: yes
+  become_user: '{{ user.name }}'
+  git:
+    repo: https://github.com/rbenv/ruby-build.git
+    dest: /home/{{ user.name }}/.rbenv/plugins/ruby-build
+
+- name: create rbenv.sh
+  become: yes
+  become_user: '{{ user.name }}'
+  template:
+    src: rbenv.sh
+    dest: /home/{{ user.name }}/profile.d/rbenv.sh
+
+- name: source rbenv.sh
+  become: yes
+  become_user: '{{ user.name }}'
+  lineinfile:
+    dest: /home/{{ user.name }}/.bashrc
+    line: source /home/{{ user.name }}/profile.d/rbenv.sh
+
+- name: check ruby {{ ruby.version }} installed
+  become: yes
+  become_user: '{{ user.name }}'
+  shell: /bin/bash -l -c 'rbenv versions | grep {{ ruby.version }}'
+  register: installed
+  changed_when: False
+  failed_when: False
+
+- name: install ruby {{ ruby.version }}
+  become: yes
+  become_user: '{{ user.name }}'
+  shell: /bin/bash -l -c 'rbenv install {{ ruby.version }}'
+  when: ruby.version not in installed.stdout
+
+- name: check current ruby version
+  become: yes
+  become_user: '{{ user.name }}'
+  shell: /bin/bash -l -c 'ruby -v'
+  register: version
+  changed_when: False
+  failed_when: False
+
+- name: switch ruby version to {{ ruby.version }}
+  become: yes
+  become_user: '{{ user.name }}'
+  shell: /bin/bash -l -c 'rbenv global {{ ruby.version }}'
+  when: ruby.version not in version.stdout
+
+- name: copy .gemrc to ~/.gemrc to avoid to install rb-docs
+  become: yes
+  become_user: '{{ user.name }}'
+  template:
+    src: .gemrc
+    dest: /home/{{ user.name }}/.gemrc
+
+- name: install bundler
+  become: yes
+  become_user: '{{ user.name }}'
+  gem:
+    name: '{{ item }}'
+    executable: /home/{{ user.name }}/.rbenv/shims/gem
+    user_install: False
+  with_items:
+    - bundler

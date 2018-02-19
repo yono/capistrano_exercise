@@ -1,24 +1,12 @@
-# README
+# Capistrano Excersize
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Provisioning to Vagrant
 
-Things you may want to cover:
+$ cd ansible/
+$ vagrant up
+$ vagrant ssh-config >> ~/.ssh/config
+$ ansible-playbook -i hosts -l staging site.yml
 
-* Ruby version
+## Deployment to Vagrant
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+$ bundle exec cap staging deploy
